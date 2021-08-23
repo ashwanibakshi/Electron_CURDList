@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <title>TODO LIST</title>
+ <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+ <script>window.$ = window.jQuery = require('jquery');</script>
+ <script>if (window.module) module = window.module;</script>
+ <script>
+  var elect   = require('electron');
+
+elect.ipcRenderer.on('getonload',(event,arg)=>{
+     $("#item").val('');
+      var x = JSON.parse(arg);
+      $("#table tbody tr").remove();
+      for(var i=0;i<x.length;i++){
+  $("#table tbody").append('<tr>'+'<td>'+x[i].items+'</td>'+'<td>'+x[i].createdAt+'</td>'+'<td>'+x[i].updatedAt+'</td>'+'<td>'+'<input type="button" value="edit">    <input type="button" value="delete">'+'</td>'+'</tr>')
+      }
+})
+
+ function insertData(){
+   var data = $("#item").val();
+   elect.ipcRenderer.send('add',data)
+ }
+
+ </script>
+ </head>
+ <body>
+   <div class="container">
+       <div class="row">
+          <div class="column">
+            <br><br>
+  <input type="text" class="form-control" name="" id="item" placeholder="enter list item"><br>
+   <p class="text-center"><button class="btn btn-success btn-lg" onclick="insertData()">Add Item</button></p>
+          </div>
+        </div>
+        <table class="table table-responsive" border="1" id="table">
+          <thead >
+            <tr>
+            <th>item</th>
+            <th>createdAt</th>
+            <th>updatedAt</th>
+            <th>edit/delete</th>
+            </tr>
+            </thead>
+            <tbody>
+              </tbody>
+          </table>
+   </div>
+ </body>
+</html>
