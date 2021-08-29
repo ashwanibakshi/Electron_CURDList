@@ -65,7 +65,7 @@ ipcMain.on('add', (event, arg) => {
      });
      todoData.save((err,data)=>{
          if(err){
-           console.log(err);
+           console.log(err.message);
          }
          else{
            todoModel.find({},{},(err,fdata)=>{
@@ -74,12 +74,70 @@ ipcMain.on('add', (event, arg) => {
               }
               else{
                 var dataa = JSON.stringify(fdata);
-                console.log(fdata);
                event.sender.send('getonload',dataa);
               }
            });
          }
      });
+});
+
+ipcMain.on("edit",(event,arg)=>{
+    todoModel.findOne({"_id":arg},(err,data)=>{
+          if(err){
+            console.log(err);
+          }
+          else{
+            var dataa = {
+              id:data._id,
+              items:data.items
+            }
+            console.log(dataa);
+            dataa = JSON.stringify(dataa);
+            event.sender.send("editedData",dataa);
+          }
+    });
+});
+
+ipcMain.on("update",(event,arg)=>{
+     console.log(arg);
+     todoModel.findOneAndUpdate({"_id":arg.id},{$set:{"items":arg.items,"updatedAt":Date.now()}},{new:true},(err,udata)=>{
+           if(err){
+             console.log(err);
+           }
+           else if(udata){
+            todoModel.find({},{},(err,data)=>{
+              if(err){
+                console.log(err);
+              }
+              else{
+                    var dataa = JSON.stringify(data);
+                 event.sender.send('getonload',dataa)
+              }
+            })
+           }
+           else{
+             console.log("data not updated");
+           }
+     });
+});
+
+ipcMain.on("delete",(event,arg)=>{
+   todoModel.deleteOne({"_id":arg},(err,deldata)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+        todoModel.find({},{},(err,data)=>{
+          if(err){
+            console.log(err);
+          }
+          else{
+                var dataa = JSON.stringify(data);
+             event.sender.send('getonload',dataa)
+          }
+        })
+      }
+   });
 });
 
    

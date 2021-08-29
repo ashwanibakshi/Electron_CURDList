@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
- <title>TODO LIST</title>
+ <title>CURD List</title>
  <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -18,16 +18,46 @@
 
 elect.ipcRenderer.on('getonload',(event,arg)=>{
      $("#item").val('');
+     $("#update").remove();
+     $("#add").show();
       var x = JSON.parse(arg);
       $("#table tbody tr").remove();
       for(var i=0;i<x.length;i++){
-  $("#table tbody").append('<tr>'+'<td>'+x[i].items+'</td>'+'<td>'+x[i].createdAt+'</td>'+'<td>'+x[i].updatedAt+'</td>'+'<td>'+'<input type="button" value="edit">    <input type="button" value="delete">'+'</td>'+'</tr>')
+  $("#table tbody").append('<tr>'+'<td>'+x[i].items+'</td>'+'<td>'+x[i].createdAt+'</td>'+'<td>'+x[i].updatedAt+'</td>'+'<td>'+'<input type="button" class="edit" data-value="'+x[i]._id+'" onclick="editData(this)" value="edit" />    <input type="button" data-value="'+x[i]._id+'" onclick="delData(this)" value="delete"/>'+'</td>'+'</tr>')
       }
 })
 
+elect.ipcRenderer.on('editedData',(event,arg)=>{
+     $("#item").val('');
+     var x = JSON.parse(arg);
+     console.log(x);
+     $("#item").val(x.items);
+     $("#add").hide();
+     $("#update").remove()
+     $("#btnn").append('<button class="btn btn-success btn-lg" id="update" data-value="'+x.id+'"  onclick="updateData(this)">Update Item</button>')
+});
+
  function insertData(){
    var data = $("#item").val();
-   elect.ipcRenderer.send('add',data)
+    elect.ipcRenderer.send('add',data)
+ }
+
+ function editData(e){
+   var id = e.dataset.value;
+   elect.ipcRenderer.send("edit",id); 
+  }
+
+ function updateData(e){
+    var x = {
+      items: $("#item").val(),
+        id : e.dataset.value   
+     }
+      elect.ipcRenderer.send("update",x);
+  }
+
+ function delData(e){
+   var id = e.dataset.value
+   elect.ipcRenderer.send("delete",id);
  }
 
  </script>
@@ -37,8 +67,10 @@ elect.ipcRenderer.on('getonload',(event,arg)=>{
        <div class="row">
           <div class="column">
             <br><br>
-  <input type="text" class="form-control" name="" id="item" placeholder="enter list item"><br>
-   <p class="text-center"><button class="btn btn-success btn-lg" onclick="insertData()">Add Item</button></p>
+            <form>
+  <input type="text" class="form-control" name="item" value="" id="item"  required/><br>
+   <p class="text-center" id="btnn"><button class="btn btn-success btn-lg" id="add" onclick="insertData()">Add Item</button></p>
+            </form>
           </div>
         </div>
         <table class="table table-responsive" border="1" id="table">
