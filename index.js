@@ -37,7 +37,7 @@ app.on('ready', () => {
      devTools:true
       }
     });
-//  win.setMenu(menu);   // hide the menu
+ win.setMenu(null);   // hide the menu
  win.loadURL(`file://${__dirname}/index.html`)
 
  win.webContents.on('did-finish-load',()=>{
