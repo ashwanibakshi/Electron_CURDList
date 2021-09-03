@@ -1,4 +1,5 @@
 const {app,BrowserWindow,ipcMain}   = require("electron");
+const dialog = require('electron').dialog;
 const mongoose   = require("mongoose");
 
 //mongodb connection
@@ -40,6 +41,7 @@ app.on('ready', () => {
  win.setMenu(null);   // hide the menu
  win.loadURL(`file://${__dirname}/index.html`)
 
+//  console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));
  win.webContents.on('did-finish-load',()=>{
     todoModel.find({},{},(err,data)=>{
       if(err){
